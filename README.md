@@ -1,21 +1,84 @@
 # Lower Motor Unit — Healthy Signaling and ALS
 
-A responsive, backend-free educational illustration that uses a lightweight Three.js scene to explain the complete lower motor unit and selected ALS-related changes. It is schematic and not to scale; it is not medical advice, not a diagnostic tool, and not treatment guidance. The application is packaged as a Next.js App Router project for Vercel and includes an automatic Canvas fallback when WebGL is unavailable.
+This project is a responsive educational illustration. It uses a lightweight
+Three.js scene to explain the complete lower motor unit and selected changes
+related to amyotrophic lateral sclerosis (ALS). It is schematic and not to scale.
+It is not medical advice, not a diagnostic tool, and not treatment guidance.
+
+The application is a Next.js App Router project, packaged for Vercel. It has no
+backend. If WebGL is not available, the application automatically shows a
+Canvas fallback.
 
 ![Release demo showing the lower-motor-unit teaching interface](docs/release-demo.png)
 
+## Medical disclaimer
+
+This visualization is an educational illustration, not medical advice, not a
+diagnostic tool, and not treatment guidance. It is not a substitute for clinical
+care. The schematic is not to scale, and its illustrative states are not
+clinical stages or a patient timeline.
+
+## What the page shows
+
+### Hero
+
+The page opens on the cinematic hero. The hero is a deterministic ambient loop
+of the lower motor unit. The loop lasts about 6 seconds. The hero has these
+controls:
+
+- Normal, ALS, and Compare modes.
+- An illustrative-state slider.
+- Chapter markers (Cell body, Axon, Junction, Muscle) that steer the camera.
+
+If `prefers-reduced-motion` is on, the hero shows a static poster and does not
+animate.
+
+### Atlas
+
+The **Explore the full atlas** link goes down to the atlas. The atlas is the
+full interactive experience. In the atlas, you can do these actions:
+
+- Drag with a mouse or one finger to rotate the 3D motor unit.
+- Scroll or pinch to zoom.
+- Use the anatomical labels for guided camera views.
+- Switch among Normal, ALS, and Compare modes.
+- Move the timeline from the healthy state through five illustrative ALS-related
+  teaching states.
+- Play, pause, replay, or slow the animation.
+- Start the guided Signal journey.
+- Choose **Use simplified 2D view** to preview the accessible Canvas fallback.
+- If focus is outside a control, press `R` to reset the camera.
+
+## Requirements
+
+- Node.js 22.13 or newer.
+
+The application does not need a backend, account, database, worker, cloud
+binding, or environment variable.
+
+The release branch does not contain the legacy authentication, D1, Drizzle,
+Cloudflare Worker, Vite, and Vinext template code. This code was removed
+because no part of this educational application could reach it.
+
 ## Run locally
 
-Requirements: Node.js 22.13 or newer.
+1. Run these commands. They install the exact dependencies and start the
+   development server.
 
-```bash
-npm ci
-npm run dev
-```
+   ```bash
+   npm ci
+   npm run dev
+   ```
 
-Open `http://localhost:3000/`.
+2. Open `http://localhost:3000/`.
 
-For a production check:
+To show the deterministic accessible Canvas fallback, open
+`http://localhost:3000/?fallback=1`. By default, browsers that support WebGL
+show the interactive 3D scene.
+
+## Test and production check
+
+Run these commands for a production check:
 
 ```bash
 npm test
@@ -24,28 +87,8 @@ npm run test:browser
 npm start
 ```
 
-The browser suite installs Chromium separately with
-`npx playwright install chromium`. To demo the deterministic accessible view,
-open `http://localhost:3000/?fallback=1`; normal WebGL-capable browsers use the
-interactive 3D scene by default.
-
-No backend, account, database, worker, cloud binding, or environment variable is
-required. Legacy authentication, D1, Drizzle, Cloudflare Worker, Vite, and
-Vinext template code has been removed from the release branch because none of
-it was reachable from this educational application.
-
-## Interaction
-
-- Land on the cinematic hero: a deterministic ~6-second ambient loop of the lower motor unit with Normal, ALS, and Compare modes, an illustrative-state slider, and chapter markers (Cell body, Axon, Junction, Muscle) that steer the camera; under `prefers-reduced-motion` the hero shows a static poster instead of animating.
-- Follow the **Explore the full atlas** link down to the full interactive experience.
-- Drag with a mouse or one finger to rotate the 3D motor unit.
-- Scroll or pinch to zoom.
-- Use the anatomical labels for guided camera views.
-- Switch among Normal, ALS, and Side-by-side modes.
-- Move the timeline from the healthy state through five illustrative ALS-related teaching states.
-- Play, pause, replay, slow, or launch the guided Signal journey.
-- Choose **Use simplified view** to preview the accessible 2D fallback.
-- Press `R` while focus is outside a control to reset the camera.
+The browser suite needs Chromium. The `npx playwright install chromium` command
+installs it separately.
 
 ## Project structure
 
@@ -61,41 +104,72 @@ it was reachable from this educational application.
 - `lib/content.ts` — medically important stage, structure, glossary, and source content
 - `app/globals.css` — responsive visual system and accessibility states
 
+## Accessibility and performance
+
+The interface has these accessibility features:
+
+- Semantic controls.
+- Visible focus styles.
+- Mobile targets of 44px or larger.
+- Labels that you can operate with a keyboard.
+- High-contrast palettes.
+- Live status text.
+- Layouts that do not rely on horizontal scrolling.
+
+If `prefers-reduced-motion` is on and you do not explicitly opt into
+playback, the scene pauses by default and camera changes are immediate.
+
+The scene uses these performance measures:
+
+- Procedural low-polygon geometry.
+- No texture downloads.
+- Lazy-loaded Three.js code.
+- Capped pixel density.
+- Steady 24/45 fps (frames per second) targets.
+- Fewer particles and geometry segments on constrained devices.
+- Suspended rendering when the scene is offscreen.
+- Complete WebGL cleanup.
+
+If WebGL is not available, the responsive Canvas fallback keeps the content and
+the stage controls.
+
 ## Deployment
 
 Any platform that supports a standard Next.js production build can host the
-site. Vercel detects the application without custom build commands. The
-sanitized `.openai/hosting.json` file is retained only to document that the
-previous project identifier and unused bindings were removed; it is excluded
-from deployment and is not read by the application.
+site. Vercel detects the application and does not need custom build commands.
 
-## Accessibility and performance
-
-The interface uses semantic controls, visible focus styles, 44px-or-larger mobile targets, keyboard-operable labels, high-contrast palettes, live status text, and layouts that do not rely on horizontal scrolling. `prefers-reduced-motion` pauses the scene by default and makes camera changes immediate unless the user explicitly opts into playback.
-
-The scene uses procedural low-polygon geometry, no texture downloads, lazy-loaded Three.js code, capped pixel density, steady 24/45 fps targets, fewer particles and geometry segments on constrained devices, offscreen rendering suspension, and complete WebGL cleanup. A responsive Canvas diagram preserves the content and stage controls when WebGL is unavailable.
+The repository keeps the sanitized `.openai/hosting.json` file only as a
+record. This file shows that the previous project identifier and the unused
+bindings were removed. The deployment excludes this file, and the application
+does not read it.
 
 ## Scientific scope
 
-The numbered ALS states are a teaching scaffold, not clinical stages and not one claimed molecular sequence. ALS can affect upper and lower motor neurons; this model focuses on lower motor neurons. It does not frame primary demyelination as the defining mechanism, distinguishes neurogenic atrophy from ordinary muscle aging, and does not treat any visible sign as diagnostic.
+The numbered ALS states are a teaching scaffold. They are not clinical stages,
+and they do not claim one molecular sequence.
 
-This visualization is an educational illustration, not medical advice, not a
-diagnostic tool, and not treatment guidance. It is not a substitute for clinical
-care. The schematic is not to scale, and its illustrative states are not
-clinical stages or a patient timeline.
+ALS can affect upper and lower motor neurons. This model focuses on lower motor
+neurons. The model:
 
-The evidence mapping and review limits are recorded in
-[`docs/MEDICAL_REVIEW.md`](docs/MEDICAL_REVIEW.md). Asset provenance and release
-rights are tracked separately in
-[`THIRD_PARTY_RIGHTS.md`](THIRD_PARTY_RIGHTS.md).
+- Does not frame primary demyelination as the defining mechanism.
+- Distinguishes neurogenic atrophy from ordinary muscle aging.
+- Does not treat any visible sign as diagnostic.
+
+[`docs/MEDICAL_REVIEW.md`](docs/MEDICAL_REVIEW.md) records the evidence mapping
+and the review limits. [`THIRD_PARTY_RIGHTS.md`](THIRD_PARTY_RIGHTS.md) records
+the asset provenance and release rights separately.
 
 ## Portfolio case study
 
-See [the case study and guided demo](docs/PORTFOLIO.md) for the software scope,
-the related static implementation, and the distinction between this running
-application and separately created animation videos. The
-[media provenance record](docs/MEDIA_PROVENANCE.md) does not grant rights to
-those external videos or select one for publication.
+[The case study and guided demo](docs/PORTFOLIO.md) describe these items:
+
+- The software scope.
+- The related static implementation.
+- The distinction between this running application and separately created
+  animation videos.
+
+The [media provenance record](docs/MEDIA_PROVENANCE.md) does not grant rights
+to those external videos. It also does not select one of them for publication.
 
 ## License
 
@@ -103,5 +177,5 @@ Original application source is licensed under the [MIT License](LICENSE).
 Owner-created educational prose, labels, diagrams, and screenshots identified
 in [`THIRD_PARTY_RIGHTS.md`](THIRD_PARTY_RIGHTS.md) are separately licensed
 under [CC BY 4.0](CONTENT_LICENSE.md). Third-party code and other material
-retain their own notices and terms; the external animation files in the media
+retain their own notices and terms. The external animation files in the media
 inventory are not included or relicensed.
