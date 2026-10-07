@@ -76,6 +76,18 @@ To show the deterministic accessible Canvas fallback, open
 `http://localhost:3000/?fallback=1`. By default, browsers that support WebGL
 show the interactive 3D scene.
 
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Starts the development server on port 3000. |
+| `npm run lint` | Runs ESLint. |
+| `npm run typecheck` | Runs strict TypeScript checks. Does not emit files. |
+| `npm run test:unit` | Runs the unit and scientific-content tests. |
+| `npm test` | Builds the site, then runs the unit tests and the rendered-HTML tests. |
+| `npm run test:browser` | Runs the Playwright browser and accessibility tests. Needs Chromium. |
+| `npm run build` / `npm start` | Makes and serves the production build. |
+
 ## Test and production check
 
 Run these commands for a production check:
@@ -115,6 +127,10 @@ The interface has these accessibility features:
 - High-contrast palettes.
 - Live status text.
 - Layouts that do not rely on horizontal scrolling.
+- 3D canvases that screen readers announce as images, with a text description.
+- Source links that tell screen-reader users that they open in a new tab.
+- Pressed-state and focus outlines that stay visible in Windows forced-colors
+  (high-contrast) mode.
 
 If `prefers-reduced-motion` is on and you do not explicitly opt into
 playback, the scene pauses by default and camera changes are immediate.
@@ -127,7 +143,9 @@ The scene uses these performance measures:
 - Capped pixel density.
 - Steady 24/45 fps (frames per second) targets.
 - Fewer particles and geometry segments on constrained devices.
-- Suspended rendering when the scene is offscreen.
+- Suspended rendering when the scene is offscreen or the tab is hidden.
+- Render on demand in the atlas: when the animation is paused and the camera
+  does not move, the scene does not draw new frames.
 - Complete WebGL cleanup.
 
 If WebGL is not available, the responsive Canvas fallback keeps the content and
@@ -137,6 +155,10 @@ the stage controls.
 
 Any platform that supports a standard Next.js production build can host the
 site. Vercel detects the application and does not need custom build commands.
+
+`next.config.ts` sends conservative security headers on every route
+(`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN`,
+and a restrictive `Permissions-Policy`) and removes the `X-Powered-By` header.
 
 The repository keeps the sanitized `.openai/hosting.json` file only as a
 record. This file shows that the previous project identifier and the unused

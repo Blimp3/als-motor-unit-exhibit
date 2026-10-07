@@ -1,10 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
 
 const title = "Lower Motor Unit — Healthy Signaling and ALS";
 const description =
   "An interactive 3D educational model of a lower motor neuron, its neuromuscular junctions, and progressive ALS-related motor-unit changes.";
+
+export const viewport: Viewport = {
+  themeColor: "#07080a",
+  colorScheme: "dark",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();

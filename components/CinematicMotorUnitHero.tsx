@@ -69,9 +69,10 @@ export function CinematicMotorUnitHero(props: HeroSceneProps) {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.1;
+    renderer.domElement.setAttribute("role", "img");
     renderer.domElement.setAttribute(
       "aria-label",
-      "Ambient cinematic view of a simplified, illustrative spinal lower motor unit: a motor neuron cell body in the spinal cord, its axon, neuromuscular junctions, and muscle fibers. Decorative; not to scale and not diagnostic.",
+      "Ambient cinematic view of a simplified, illustrative spinal lower motor unit: a motor neuron cell body in the spinal cord, its axon, neuromuscular junctions, and muscle fibers. Schematic; not to scale and not diagnostic.",
     );
     container.append(renderer.domElement);
     const handleContextLost = (event: Event) => {

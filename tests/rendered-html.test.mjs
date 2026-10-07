@@ -82,6 +82,11 @@ test("server-renders the educational experience and safety context", async () =>
   assert.match(html, /og-monochrome\.png/);
   assert.match(html, /property="og:image:width" content="1200"/);
   assert.match(html, /property="og:image:height" content="630"/);
+  assert.match(html, /\(opens in a new tab\)/);
+  assert.match(html, /<meta name="theme-color" content="#07080a"/);
+  assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+  assert.equal(response.headers.get("x-powered-by"), null);
 });
 
 test("ships adaptive 3D, fallback, responsive accessibility, and Vercel paths", async () => {

@@ -104,9 +104,14 @@ export function MotorUnitScene(props: SceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const propsRef = useRef(props);
   const engineRef = useRef<Engine | null>(null);
+  // Set when the paused scene must draw one more frame (prop change, resize,
+  // camera interaction). While paused and idle the loop skips rendering, so a
+  // static view costs no GPU time.
+  const invalidateRef = useRef(true);
 
   useEffect(() => {
     propsRef.current = props;
+    invalidateRef.current = true;
   }, [props]);
 
   useEffect(() => {
@@ -135,6 +140,7 @@ export function MotorUnitScene(props: SceneProps) {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.14;
+    renderer.domElement.setAttribute("role", "img");
     renderer.domElement.setAttribute(
       "aria-label",
       "Interactive schematic 3D spinal alpha motor unit. The soma lies in a spinal-cord ventral horn and its axon exits through a ventral root, enters a peripheral nerve, and reaches neuromuscular junctions and muscle. Drag to rotate, pinch or scroll to zoom, and use the structure buttons for guided camera views.",
@@ -226,6 +232,10 @@ export function MotorUnitScene(props: SceneProps) {
       cameraGoal.active = false;
       cameraGoal.pauseSensitive = false;
     });
+    const handleControlsChange = () => {
+      invalidateRef.current = true;
+    };
+    controls.addEventListener("change", handleControlsChange);
 
     const controller: SceneController = {
       focus: engine.focus,
@@ -268,6 +278,7 @@ export function MotorUnitScene(props: SceneProps) {
       camera.updateProjectionMatrix();
       layoutUnits(engine, propsRef.current.mode, propsRef.current.stage);
       if (!cameraGoal.active) resetCameraForMode(engine, propsRef.current.mode, camera.aspect, true);
+      invalidateRef.current = true;
     };
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
@@ -279,6 +290,7 @@ export function MotorUnitScene(props: SceneProps) {
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         inView = entry.isIntersecting;
+        if (inView) invalidateRef.current = true;
       },
       { rootMargin: "120px" },
     );
@@ -318,7 +330,16 @@ export function MotorUnitScene(props: SceneProps) {
           cameraGoal.pauseSensitive = false;
         }
       }
-      controls.update();
+      const controlsMoved = controls.update();
+      // Render on demand while paused: skip identical frames when nothing moves.
+      const animating = current.playing || cameraGoal.active || controlsMoved;
+      if (!animating && !invalidateRef.current) {
+        // Restart the fps sample so idle time does not lower the reading.
+        sampledFrames = 0;
+        sampleStartedAt = time;
+        return;
+      }
+      invalidateRef.current = false;
       renderer.render(scene, camera);
       sampledFrames += 1;
       if (time - sampleStartedAt >= 1000) {
@@ -328,6 +349,10 @@ export function MotorUnitScene(props: SceneProps) {
       }
     };
     animationId = requestAnimationFrame(render);
+    const handleVisibilityChange = () => {
+      if (!document.hidden) invalidateRef.current = true;
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       cancelAnimationFrame(animationId);
@@ -336,6 +361,8 @@ export function MotorUnitScene(props: SceneProps) {
       renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
       renderer.domElement.removeEventListener("pointerup", handlePointerUp);
       renderer.domElement.removeEventListener("webglcontextlost", handleContextLost);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      controls.removeEventListener("change", handleControlsChange);
       controls.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
@@ -357,6 +384,7 @@ export function MotorUnitScene(props: SceneProps) {
 
   useEffect(() => {
     engineRef.current?.replay();
+    invalidateRef.current = true;
   }, [props.replayToken]);
 
   return <div className="three-mount" ref={containerRef} />;

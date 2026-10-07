@@ -97,6 +97,7 @@ export default function Home() {
                     <small>Supports: {source.supports}</small>
                   </span>
                   <span aria-hidden="true">↗</span>
+                  <span className="visually-hidden">(opens in a new tab)</span>
                 </a>
               </li>
             ))}
