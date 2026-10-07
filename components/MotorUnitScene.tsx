@@ -333,7 +333,12 @@ export function MotorUnitScene(props: SceneProps) {
       const controlsMoved = controls.update();
       // Render on demand while paused: skip identical frames when nothing moves.
       const animating = current.playing || cameraGoal.active || controlsMoved;
-      if (!animating && !invalidateRef.current) return;
+      if (!animating && !invalidateRef.current) {
+        // Restart the fps sample so idle time does not lower the reading.
+        sampledFrames = 0;
+        sampleStartedAt = time;
+        return;
+      }
       invalidateRef.current = false;
       renderer.render(scene, camera);
       sampledFrames += 1;
