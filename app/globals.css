@@ -2396,3 +2396,38 @@ main {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Text for assistive technology only (for example, new-tab link warnings). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+
+/* Windows High Contrast / forced colors: keep pressed state and focus visible
+   when custom backgrounds and borders are replaced by system colors. */
+@media (forced-colors: active) {
+  [aria-pressed="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid Highlight;
+  }
+
+  canvas {
+    forced-color-adjust: none;
+  }
+}

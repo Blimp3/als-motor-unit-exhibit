@@ -1,6 +1,22 @@
 # Dependency and license review
 
-Review date: 2026-09-17
+## Update 2026-10-07
+
+- `npm audit` reported a critical advisory for Next.js 16.2.0–16.3.5 and high
+  advisories for Sharp (<0.35.5) and `source-map-js` (1.0.0–1.2.1).
+- Next.js and `eslint-config-next` moved from 16.3.5 to 16.4.0 (minor release,
+  same major). `npm audit fix` moved Sharp to 0.35.5 and `source-map-js` to
+  1.2.2 inside the existing dependency ranges.
+- One high advisory remains: `braces` 3.0.3 (GHSA-vfj7-8cjw-p6xm), reached only
+  through the development lint chain `eslint-config-next` →
+  `@next/eslint-plugin-next` → `fast-glob` → `micromatch`. No fixed `braces`
+  release exists yet, and it is not part of the production bundle. Re-check
+  before release.
+- Lint, TypeScript, unit/scientific tests, rendered-HTML tests, the production
+  build, and the Playwright browser tests pass with the new lockfile.
+- OSV-Scanner was not rerun for this update.
+
+## Review of 2026-09-17
 
 ## Security result
 
